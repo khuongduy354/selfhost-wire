@@ -13,7 +13,7 @@ interface UploadResponse {
 }
 
 const host =
-  process.env.REACT_APP_API_URL ||
+  import.meta.env.VITE_API_URL ||
   (function () {
     throw new Error("API url not set in REACT environment");
   })();
@@ -43,7 +43,7 @@ export const API = {
       formData.append("originalName", file.name);
 
       try {
-        const response = await fetch(`${API.baseUrl}/upload/upload-chunk`, {
+        const response = await fetch(`${API.baseUrl}/upload-chunk`, {
           method: "POST",
           body: formData,
         });
@@ -68,15 +68,15 @@ export const API = {
     }
 
     try {
-      const res = await fetch(`${API.baseUrl}/upload/complete-upload`, {
+      const res = await fetch(`${API.baseUrl}/complete-upload`, {
         method: "POST",
         body: JSON.stringify({ uploadId, fileName: file.name }),
         headers: { "Content-Type": "application/json" },
       });
 
       if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Failed to finalize upload");
+        const error = await res.text();
+        throw new Error(error);
       }
 
       return await res.json();
